@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="game" class="ru.otus.spring.game.Game">
+        <constructor-arg name="gameConfig" ref="gameCSVConfig"/>
+        <constructor-arg name="player" ref="stdIOPlayer"/>
+    </bean>
+    <bean id="stdIOPlayer" class="ru.otus.spring.game.STDIOPlayer"/>
+    <bean id="gameCSVConfig" class="ru.otus.spring.game.csv.CSVGameConfig">
+        <constructor-arg name="gameFile" value="classpath:game.csv"/>
+    </bean>
+
+</beans>

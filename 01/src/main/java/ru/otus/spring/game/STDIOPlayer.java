@@ -16,12 +16,18 @@ public class STDIOPlayer implements Player, AutoCloseable {
     }
 
     @Override
+    public void showHint(String hint) {
+        System.out.println(hint);
+    }
+
+    @Override
     public void showResult(String result) {
         System.out.println(result);
+        close();
     }
 
     @Override
     public void close() {
-        this.scanner.close();
+        scanner.close();
     }
 }

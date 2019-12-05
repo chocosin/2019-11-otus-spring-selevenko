@@ -1,7 +1,10 @@
 package ru.otus.spring.game;
 
+import org.springframework.stereotype.Service;
+
 import java.util.Scanner;
 
+@Service
 public class STDIOPlayer implements Player, AutoCloseable {
     private final Scanner scanner;
 

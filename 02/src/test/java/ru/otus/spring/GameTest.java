@@ -1,31 +1,52 @@
 package ru.otus.spring;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.MessageSource;
 import ru.otus.spring.game.Game;
 import ru.otus.spring.game.GameConfig;
 import ru.otus.spring.game.Player;
 import ru.otus.spring.game.Question;
 
-import java.text.MessageFormat;
+import java.util.Locale;
 
 import static org.mockito.Mockito.*;
 
 class GameTest {
     private static final String NAME = "Vladimir Lenin";
-    private static final String NAME_QUESTION = "Введите ваши имя и фамилию (например, \"Владимир Ленин\")";
-    private static final String NAME_HINT = "Имя должно быть в формате \"Имя Фамилия\"";
+    private static final String NAME_QUESTION = "enterYourName";
+    private static final String NAME_HINT = "nameHint";
+
+    private MessageSource messageSource;
+    private Locale locale;
+
+    @BeforeEach
+    private void mockMessageSource() {
+        messageSource = mock(MessageSource.class);
+        when(messageSource.getMessage(any(), any(), eq(locale))).thenAnswer(
+                invocation -> invocation.getArgumentAt(0, String.class)
+        );
+        when(messageSource.getMessage(eq("gameResult"), any(), eq(locale))).thenAnswer(
+                invocation -> {
+                    Object[] args = invocation.getArgumentAt(1, Object[].class);
+                    int correctNumber = (int) args[0];
+                    String name = (String) args[1];
+                    return "gameResult " + correctNumber + " " + name;
+                }
+        );
+    }
 
     @Test
     void testPlayEmptyGame() {
         Player player = mock(Player.class);
         GameConfig gameConfig = mock(GameConfig.class);
+
         when(player.askQuestion(NAME_QUESTION)).thenReturn(NAME).thenThrow(new IllegalArgumentException());
         when(gameConfig.getQuestionCount()).thenReturn(0);
-        when(gameConfig.getQuestionCount()).thenReturn(0);
 
-        new Game(gameConfig, player).play();
+        new Game(gameConfig, player, locale, messageSource).play();
 
-        verify(player).showResult("У нас к вам нет вопросов");
+        verify(player).showResult("noQuestions");
     }
 
     @Test
@@ -42,9 +63,9 @@ class GameTest {
         when(gameConfig.getQuestionCount()).thenReturn(1);
         when(gameConfig.getQuestion(0)).thenReturn(new Question("q1", "a1"));
 
-        when(player.askQuestion("q1")).thenReturn("wrong");
+        when(player.askQuestion("questionNumber. q1")).thenReturn("wrong");
 
-        new Game(gameConfig, player).play();
+        new Game(gameConfig, player, locale, messageSource).play();
 
         verify(player, times(3)).askQuestion(NAME_QUESTION);
         verify(player, times(2)).showHint(NAME_HINT);
@@ -60,18 +81,18 @@ class GameTest {
 
         Player player = mock(Player.class);
         when(player.askQuestion(NAME_QUESTION)).thenReturn(NAME);
-        when(player.askQuestion("q1")).thenReturn("a1");
-        when(player.askQuestion("q2")).thenReturn("wrong answer");
+        when(player.askQuestion("questionNumber. q1")).thenReturn("a1");
+        when(player.askQuestion("questionNumber. q2")).thenReturn("wrong answer");
 
-        new Game(gameConfig, player).play();
+        new Game(gameConfig, player, locale, messageSource).play();
 
-        verify(player).askQuestion("q1");
-        verify(player).askQuestion("q2");
+        verify(player).askQuestion("questionNumber. q1");
+        verify(player).askQuestion("questionNumber. q2");
         verify(player).showResult(correctResult(1, NAME));
         verify(player, never()).showHint(any());
     }
 
     private static String correctResult(int score, String name) {
-        return eq(MessageFormat.format("Количество правильных ответов: {0}. Спасибо за игру, {1}.", score, name));
+        return eq("gameResult " + score + " " + name);
     }
 }

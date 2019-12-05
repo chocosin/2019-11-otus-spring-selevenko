@@ -2,6 +2,7 @@ package ru.otus.spring.game.csv;
 
 import com.opencsv.CSVReader;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 import ru.otus.spring.game.GameConfig;
 import ru.otus.spring.game.Question;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Service
 public class CSVGameConfig implements GameConfig {
     private List<Question> questions;
 

@@ -1,0 +1,6 @@
+app:
+  language: en
+spring:
+  messages:
+    basename: "questions"
+    use-code-as-default-message: true

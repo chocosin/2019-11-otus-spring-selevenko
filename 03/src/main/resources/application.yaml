@@ -1,0 +1,7 @@
+spring:
+  messages:
+    basename: "questions"
+
+app:
+  questionsCSVFile: "game.csv"
+  language: ru

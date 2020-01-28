@@ -1,5 +1,6 @@
 package ru.otus.spring.hw5
 
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.shell.standard.ShellComponent
 import org.springframework.shell.standard.ShellMethod
 import org.springframework.shell.standard.ShellOption
@@ -13,7 +14,7 @@ import ru.otus.spring.hw5.domain.Genre
 @ShellComponent
 class BookRegistry(
         private val bookDao: BookDao,
-        private val authorDao: AuthorDao,
+        @Qualifier("jpaAuthorDao") private val authorDao: AuthorDao,
         private val genreDao: GenreDao
 ) {
 
@@ -29,7 +30,7 @@ class BookRegistry(
         val genre = genreDao.getById(genreId.toInt()) ?: return "genre not found"
         val author = authorDao.getById(authorId.toInt()) ?: return "author not found"
         val book = Book(
-                id = -1,
+                id = 0,
                 title = title,
                 genres = listOf(genre),
                 authors = listOf(author)
@@ -87,7 +88,7 @@ class BookRegistry(
             last: String
     ): String {
         val author = Author(
-                id = -1,
+                id = 0,
                 lastName = last,
                 firstName = first
         )
@@ -99,7 +100,7 @@ class BookRegistry(
             name: String
     ): String {
         val genre = Genre(
-                id = -1,
+                id = 0,
                 name = name
         )
         return genreDao.insert(genre).let { genre.copy(id = it) }.toString()

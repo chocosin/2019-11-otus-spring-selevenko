@@ -1,5 +1,6 @@
 package ru.otus.spring.hw5.dao
 
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.dao.IncorrectResultSizeDataAccessException
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
@@ -35,7 +36,7 @@ private object BookGenres {
 class JdbcBookDao(
         private val jdbc: NamedParameterJdbcOperations,
         private val genreDao: GenreDao,
-        private val authorDao: AuthorDao
+        @Qualifier("jpaAuthorDao") private val authorDao: AuthorDao
 ) : BookDao {
     override fun getById(bookId: Long): Book? {
         val book = with(Books) {

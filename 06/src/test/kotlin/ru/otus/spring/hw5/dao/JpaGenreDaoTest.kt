@@ -35,5 +35,17 @@ internal class JpaGenreDaoTest {
         assertThat(find(g.id)).isEqualTo(changed)
     }
 
+    @Test
+    internal fun `inserts, deletes and lists`() {
+        val genres = List(10) { randomGenre() }
+        genres.forEach { em.persist(it) }
+
+        assertThat(dao.list()).containsExactlyInAnyOrderElementsOf(genres)
+
+        dao.delete(genres[0].id)
+
+        assertThat(dao.list()).containsExactlyInAnyOrderElementsOf(genres.slice(1 until genres.size))
+    }
+
     private fun find(id: Int) = em.find(Genre::class.java, id)
 }

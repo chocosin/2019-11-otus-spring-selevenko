@@ -7,8 +7,8 @@ create table books
 create table authors
 (
   id        bigint primary key auto_increment,
-  firstName varchar(30),
-  lastName  varchar(30)
+  first_name varchar(30),
+  last_name  varchar(30)
 );
 
 create table genres
@@ -17,16 +17,16 @@ create table genres
   name varchar(30)
 );
 
-create table bookAuthors
+create table book_authors
 (
-  bookId   bigint,
-  authorId bigint,
-  primary key (bookId, authorId)
+  book_id   bigint,
+  author_id bigint,
+  primary key (book_id, author_id)
 );
 
-create table bookGenres
+create table book_genres
 (
-  bookId  bigint,
-  genreId int,
-  primary key (bookId, genreId)
+  book_id  bigint,
+  genre_id int,
+  primary key (book_id, genre_id)
 );

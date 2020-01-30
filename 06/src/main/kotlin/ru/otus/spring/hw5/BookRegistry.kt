@@ -1,6 +1,5 @@
 package ru.otus.spring.hw5
 
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.shell.standard.ShellComponent
 import org.springframework.shell.standard.ShellMethod
 import org.springframework.shell.standard.ShellOption
@@ -14,7 +13,7 @@ import ru.otus.spring.hw5.domain.Genre
 @ShellComponent
 class BookRegistry(
         private val bookDao: BookDao,
-        @Qualifier("jpaAuthorDao") private val authorDao: AuthorDao,
+        private val authorDao: AuthorDao,
         private val genreDao: GenreDao
 ) {
 
@@ -32,8 +31,8 @@ class BookRegistry(
         val book = Book(
                 id = 0,
                 title = title,
-                genres = listOf(genre),
-                authors = listOf(author)
+                genres = mutableSetOf(genre),
+                authors = mutableSetOf(author)
         )
         val id = bookDao.insert(book)
         return book.copy(id = id).toString()
@@ -61,7 +60,7 @@ class BookRegistry(
         val book = bookDao.getById(bookId.toLong()) ?: return "book not found"
         val author = authorDao.getById(authorId.toInt()) ?: return "author not found"
         val authors = book.authors.associateBy { it.id } + (author.id to author)
-        bookDao.update(book.copy(authors = authors.values.toList()))
+        bookDao.update(book.copy(authors = authors.values.toMutableSet()))
 
         return bookDao.getById(book.id).toString()
     }
@@ -74,7 +73,7 @@ class BookRegistry(
         val book = bookDao.getById(bookId.toLong()) ?: return "book not found"
         val genre = genreDao.getById(genreId.toInt()) ?: return "genre not found"
         val genres = book.genres.associateBy { it.id } + (genre.id to genre)
-        bookDao.update(book.copy(genres = genres.values.toList()))
+        bookDao.update(book.copy(genres = genres.values.toMutableSet()))
 
         return bookDao.getById(book.id).toString()
     }

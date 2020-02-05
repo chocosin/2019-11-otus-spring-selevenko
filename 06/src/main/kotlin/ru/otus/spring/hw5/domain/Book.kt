@@ -12,7 +12,7 @@ data class Book(
 
         @ManyToMany(
                 fetch = FetchType.EAGER,
-                cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH]
+                cascade = [CascadeType.MERGE, CascadeType.REFRESH]
         )
         @JoinTable(
                 name = "book_authors",
@@ -23,14 +23,44 @@ data class Book(
 
         @ManyToMany(
                 fetch = FetchType.EAGER,
-                cascade = [CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH]
+                cascade = [CascadeType.MERGE, CascadeType.REFRESH]
         )
         @JoinTable(
                 name = "book_genres",
                 joinColumns = [JoinColumn(name = "book_id", referencedColumnName = "id")],
                 inverseJoinColumns = [JoinColumn(name = "genre_id", referencedColumnName = "id")]
         )
-        var authors: MutableSet<Author> = mutableSetOf()
+        var authors: MutableSet<Author> = mutableSetOf(),
+
+        @OneToMany(
+                fetch = FetchType.LAZY,
+                orphanRemoval = true,
+                cascade = [CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE],
+                mappedBy = "book"
+        )
+        var comments: List<BookComment> = mutableListOf()
 ) {
     constructor() : this(0L, "", mutableSetOf(), mutableSetOf())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Book
+
+        if (id != other.id) return false
+        if (title != other.title) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + title.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "Book(id=$id, title='$title', genres=$genres, authors=$authors"
+    }
 }

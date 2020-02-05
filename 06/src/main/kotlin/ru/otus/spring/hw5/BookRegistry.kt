@@ -6,6 +6,7 @@ import org.springframework.shell.standard.ShellOption
 import ru.otus.spring.hw5.dao.AuthorDao
 import ru.otus.spring.hw5.dao.BookDao
 import ru.otus.spring.hw5.dao.GenreDao
+import ru.otus.spring.hw5.dao.JpaBookCommentDao
 import ru.otus.spring.hw5.domain.Author
 import ru.otus.spring.hw5.domain.Book
 import ru.otus.spring.hw5.domain.Genre
@@ -14,7 +15,8 @@ import ru.otus.spring.hw5.domain.Genre
 class BookRegistry(
         private val bookDao: BookDao,
         private val authorDao: AuthorDao,
-        private val genreDao: GenreDao
+        private val genreDao: GenreDao,
+        private val bookCommentDao: JpaBookCommentDao
 ) {
 
     @ShellMethod(value = "list books", key = ["bl", "bookList"])
@@ -49,6 +51,22 @@ class BookRegistry(
     fun deleteBook(bookId: String): String {
         val book = bookDao.getById(bookId.toLong()) ?: return "book not found"
         bookDao.delete(book.id)
+        return "ok"
+    }
+
+    @ShellMethod(value = "list book comments", key = ["cl", "listComments"])
+    fun listComments(
+            @ShellOption("-b") bookId: String
+    ): String {
+        return bookCommentDao.getBookComments(bookId.toLong()).joinToString("\n")
+    }
+
+    @ShellMethod(value = "add book comment", key = ["ca", "addComment"])
+    fun listComments(
+            @ShellOption("-b") bookId: String,
+            @ShellOption("-c") comment: String
+    ): String {
+        bookCommentDao.addComment(bookId.toLong(), comment)
         return "ok"
     }
 

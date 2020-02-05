@@ -15,7 +15,7 @@ class JpaBookDao(
     override fun getById(id: Long): Book? = em.find(Book::class.java, id)
 
     override fun insert(book: Book): Long {
-        em.merge(book)
+        em.persist(book)
         return book.id
     }
 

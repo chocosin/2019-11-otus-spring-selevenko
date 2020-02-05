@@ -42,12 +42,13 @@ internal class JpaBookDaoTest {
 
     @Test
     internal fun `change book genres`() {
-        val (g1, g2, g3) = List(3) { randomGenre() }
+        val (g1, g2, g3) = List(3) {
+            randomGenre().also { em.persist(it) }
+        }
         val book = randomBook(
                 genres = mutableSetOf(g1, g2)
         )
         em.persist(book)
-        em.persist(g3)
 
         val changed = book.copy(
                 genres = mutableSetOf(g1, g3)
@@ -63,8 +64,8 @@ internal class JpaBookDaoTest {
 
     @Test
     internal fun `delete book`() {
-        val g = randomGenre()
-        val author = randomAuthor()
+        val g = randomGenre().also { em.persist(it) }
+        val author = randomAuthor().also { em.persist(it) }
         val book = randomBook(
                 genres = mutableSetOf(g),
                 authors = mutableSetOf(author)
